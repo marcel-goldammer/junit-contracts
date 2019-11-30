@@ -1,6 +1,39 @@
 # junit-contracts
 This is a library to create JUnit tests for your contracts. It will automatically lookup every class implementing a certain interface and runs the tests on this class.
 
+## Installation
+### Gradle
+```groovy
+repositories {
+  maven {
+    url('https://marcel-goldammer.bintray.com/maven-releases')
+  }
+}
+
+dependencies {
+  testCompile('me.marcelgoldammer:junit-contracts:1.0.0')
+}
+```
+### Maven
+```xml
+...
+<repositories>
+  <repository>
+    <id>me.marcelgoldammer</id>
+    <url>https://marcel-goldammer.bintray.com/maven-releases</url>
+  </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+    <groupId>me.marcelgoldammer</groupId>
+    <artifactId>junit-contracts</artifactId>
+    <version>1.0.0</version>
+  </dependency>
+</dependencies>
+...
+```
+
 ## Building from Source
 Run the following commands to get a local copy of this repository:
 ```
@@ -45,4 +78,4 @@ public class AdderTest {
 ```
 
 ## Bug Tracker
-Have a bug ar a feature request? [Please open a new issue.](https://github.com/marcel-goldammer/junit-contracts/issues)
+Have a bug or a feature request? [Please open a new issue.](https://github.com/marcel-goldammer/junit-contracts/issues)

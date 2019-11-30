@@ -1,18 +1,121 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
 plugins {
+    id 'com.jfrog.bintray' version '1.8.4'
+    id 'maven-publish'
     id 'java'
 }
 
-group 'me.marcelgoldammer.contracts'
-version '1.0-SNAPSHOT'
-
+group 'me.marcelgoldammer'
+version '1.0.0'
 sourceCompatibility = 1.8
 
+ext {
+    bintrayUser = System.getProperty("bintray.user")
+    bintrayKey = System.getProperty("bintray.key")
+    buildNumber = System.getProperty("build.number")
+}
+
 repositories {
+    mavenLocal()
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-    implementation("com.google.guava:guava:28.1-jre")
+    implementation('com.google.guava:guava:28.1-jre')
+    compile('junit:junit:4.12')
+}
 
-    compile group: 'junit', name: 'junit', version: '4.12'
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name 'The MIT License'
+            url 'https://opensource.org/licenses/MIT'
+            distribution 'repo'
+        }
+    }
+
+    developers {
+        developer {
+            id 'goldammer'
+            name 'Marcel Goldammer'
+            email 'mail@marcelgoldammer.me'
+        }
+    }
+
+    scm {
+        url 'https://github.com/marcel-goldammer/junit-contracts'
+    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier 'sources'
+            }
+
+            artifact javadocJar {
+                classifier 'javadoc'
+            }
+
+            groupId project.group
+            artifactId project.name
+            version project.version
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A library for contract testing with JUnit.')
+                root.appendNode('name', 'junit-contracts')
+                root.appendNode('url', 'https://github.com/marcel-goldammer/junit-contracts')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+    publications = ['mavenPublication']
+
+    pkg {
+        repo = 'maven-releases'
+        name = 'junit-contracts'
+        userOrg = 'marcel-goldammer'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/marcel-goldammer/junit-contracts.git'
+        version {
+            name = project.version
+            desc = "build ${buildNumber}"
+            released = new Date()
+        }
+    }
+
+    publish = true
+
 }
